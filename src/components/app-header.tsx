@@ -1,79 +1,114 @@
-'use client'
-import { usePathname } from 'next/navigation'
-import { useState } from 'react'
-import Link from 'next/link'
-import { Button } from '@/components/ui/button'
-import { Menu, X } from 'lucide-react'
-import { ThemeSelect } from '@/components/theme-select'
-import { ClusterUiSelect } from './cluster/cluster-ui'
-import { WalletButton } from '@/components/solana/solana-provider'
+"use client";
 
-export function AppHeader({ links = [] }: { links: { label: string; path: string }[] }) {
-  const pathname = usePathname()
-  const [showMenu, setShowMenu] = useState(false)
+import { useState } from "react";
+import Link from "next/link";
+import { Menu, X, ArrowRight } from "lucide-react";
 
-  function isActive(path: string) {
-    return path === '/' ? pathname === '/' : pathname.startsWith(path)
-  }
+export default function AppHeader() {
+  const [open, setOpen] = useState(false);
 
   return (
-    <header className="relative z-50 px-4 py-2 bg-neutral-100 dark:bg-neutral-900 dark:text-neutral-400">
-      <div className="mx-auto flex justify-between items-center">
-        <div className="flex items-baseline gap-4">
-          <Link className="text-xl hover:text-neutral-500 dark:hover:text-white" href="/">
-            <span>FairRewards</span>
+    <header
+      className="sticky top-0 z-50 w-full"
+      style={{
+        backgroundColor: "#fafafa",
+        borderBottom: "1px solid #312f2c20",
+        boxShadow: "0 8px 24px rgba(49,47,44,0.08)",
+      }}
+    >
+      <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-4">
+        {/* Logo */}
+        <Link
+          href="/"
+          className="flex items-center gap-2 text-lg font-semibold"
+          style={{ color: "#312f2c" }}
+        >
+          FairRoom
+        </Link>
+
+        {/* Desktop Nav */}
+        <nav className="hidden items-center gap-8 md:flex">
+          <NavLink href="/communities" label="Communities" />
+          <NavLink href="/how-it-works" label="How it works" />
+          <NavLink href="/about" label="About" />
+
+          <Link
+            href="/app"
+            className="flex items-center gap-1 rounded-full px-4 py-2 text-sm font-semibold transition hover:opacity-80"
+            style={{
+              backgroundColor: "#312f2c",
+              color: "#fafafa",
+            }}
+          >
+            Join for free
+            <ArrowRight size={16} />
           </Link>
-          <div className="hidden md:flex items-center">
-            <ul className="flex gap-4 flex-nowrap items-center">
-              {links.map(({ label, path }) => (
-                <li key={path}>
-                  <Link
-                    className={`hover:text-neutral-500 dark:hover:text-white ${isActive(path) ? 'text-neutral-500 dark:text-white' : ''}`}
-                    href={path}
-                  >
-                    {label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
+        </nav>
 
-        <Button variant="ghost" size="icon" className="md:hidden" onClick={() => setShowMenu(!showMenu)}>
-          {showMenu ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-        </Button>
-
-        <div className="hidden md:flex items-center gap-4">
-          <WalletButton />
-          <ClusterUiSelect />
-          <ThemeSelect />
-        </div>
-
-        {showMenu && (
-          <div className="md:hidden fixed inset-x-0 top-[52px] bottom-0 bg-neutral-100/95 dark:bg-neutral-900/95 backdrop-blur-sm">
-            <div className="flex flex-col p-4 gap-4 border-t dark:border-neutral-800">
-              <ul className="flex flex-col gap-4">
-                {links.map(({ label, path }) => (
-                  <li key={path}>
-                    <Link
-                      className={`hover:text-neutral-500 dark:hover:text-white block text-lg py-2  ${isActive(path) ? 'text-neutral-500 dark:text-white' : ''} `}
-                      href={path}
-                      onClick={() => setShowMenu(false)}
-                    >
-                      {label}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-              <div className="flex flex-col gap-4">
-                <WalletButton />
-                <ClusterUiSelect />
-                <ThemeSelect />
-              </div>
-            </div>
-          </div>
-        )}
+        {/* Mobile Toggle */}
+        <button
+          onClick={() => setOpen(!open)}
+          className="md:hidden"
+          style={{ color: "#312f2c" }}
+          aria-label="Toggle menu"
+        >
+          {open ? <X size={22} /> : <Menu size={22} />}
+        </button>
       </div>
+
+      {/* Mobile Menu */}
+      {open && (
+        <div
+          className="md:hidden"
+          style={{
+            backgroundColor: "#fafafa",
+            borderTop: "1px solid #312f2c20",
+          }}
+        >
+          <div className="flex flex-col gap-4 px-5 py-6">
+            <MobileLink href="/communities" label="Communities" />
+            <MobileLink href="/how-it-works" label="How it works" />
+            <MobileLink href="/about" label="About" />
+
+            <Link
+              href="/app"
+              onClick={() => setOpen(false)}
+              className="mt-2 flex items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold"
+              style={{
+                backgroundColor: "#312f2c",
+                color: "#fafafa",
+              }}
+            >
+              Join for free
+              <ArrowRight size={16} />
+            </Link>
+          </div>
+        </div>
+      )}
     </header>
-  )
+  );
+}
+
+function NavLink({ href, label }: { href: string; label: string }) {
+  return (
+    <Link
+      href={href}
+      className="text-sm font-medium transition hover:opacity-70"
+      style={{ color: "#312f2c" }}
+    >
+      {label}
+    </Link>
+  );
+}
+
+function MobileLink({ href, label }: { href: string; label: string }) {
+  return (
+    <Link
+      href={href}
+      className="text-base font-medium"
+      style={{ color: "#312f2c" }}
+    >
+      {label}
+    </Link>
+  );
 }

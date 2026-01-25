@@ -104,39 +104,51 @@ export function useTransferSol({ address }: { address: PublicKey }) {
   })
 }
 
-export function useRequestAirdrop({ address }: { address: PublicKey }) {
+
+export function useRequestAirdrop() {
   const { connection } = useConnection()
-  // const transactionToast = useTransactionToast()
   const client = useQueryClient()
 
   return useMutation({
-    mutationKey: ['airdrop', { endpoint: connection.rpcEndpoint, address }],
-    mutationFn: async (amount: number = 1) => {
+    mutationKey: ['airdrop', connection.rpcEndpoint],
+
+    mutationFn: async ({
+      to,
+      amount,
+    }: {
+      to: PublicKey
+      amount: number
+    }) => {
+      if (!to) throw new Error('Missing destination address')
+      if (amount <= 0) throw new Error('Invalid airdrop amount')
+
       const [latestBlockhash, signature] = await Promise.all([
         connection.getLatestBlockhash(),
-        connection.requestAirdrop(address, amount * LAMPORTS_PER_SOL),
+        connection.requestAirdrop(
+          to,
+          amount * LAMPORTS_PER_SOL
+        ),
       ])
 
-      await connection.confirmTransaction({ signature, ...latestBlockhash }, 'confirmed')
+      await connection.confirmTransaction(
+        { signature, ...latestBlockhash },
+        'confirmed'
+      )
+
       return signature
     },
-    onSuccess: async (signature) => {
-      // TODO: Add back Toast
-      // transactionToast(signature)
-      console.log('Airdrop sent', signature)
+
+    onSuccess: async () => {
       await Promise.all([
-        client.invalidateQueries({
-          queryKey: ['get-balance', { endpoint: connection.rpcEndpoint, address }],
-        }),
-        client.invalidateQueries({
-          queryKey: ['get-signatures', { endpoint: connection.rpcEndpoint, address }],
-        }),
+        client.invalidateQueries({ queryKey: ['get-balance'] }),
+        client.invalidateQueries({ queryKey: ['get-signatures'] }),
       ])
     },
   })
 }
 
-async function createTransaction({
+
+export async function createTransaction({
   publicKey,
   destination,
   amount,

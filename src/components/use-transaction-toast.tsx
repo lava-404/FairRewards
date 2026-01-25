@@ -1,10 +1,17 @@
 import { toast } from 'sonner'
-import { ExplorerLink } from './cluster/cluster-ui'
+
 
 export function useTransactionToast() {
   return (signature: string) => {
     toast('Transaction sent', {
-      description: <ExplorerLink path={`tx/${signature}`} label="View Transaction" />,
+      description: (
+        <a
+          href={`https://explorer.solana.com/tx/${signature}`}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          View Transaction
+        </a>
+      )
     })
-  }
-}
+  }}
