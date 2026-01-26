@@ -8,26 +8,35 @@ import {
   Sparkles,
   ArrowUpRight,
 } from "lucide-react";
+import { useWallet } from "@solana/wallet-adapter-react";
+
 import { AirdropRewardCard } from "@/components/features/AirdropRewarCard";
 import { BalanceCard } from "@/components/features/BalanceCard";
 import { SwapCard } from "@/components/features/SwapCard";
-import { getTier } from "@/lib/fairscore";
 import { ChatRoomCard } from "@/components/features/ChatRoomCard";
+import { getTier } from "@/lib/fairscore";
 
+/* ───────────────── Types ───────────────── */
 
-
-
-
-// Mock data for demo
-const mockWallet = {
-  account: {
-    address: {
-      toString: () => "7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU"
-    }
-  }
+type Badge = {
+  id: string;
+  label: string;
+  description: string;
+  tier: string;
 };
 
-const mockScore = 750;
+type FairScaleResponse = {
+  wallet: string;
+  fairscore: number;
+  tier: string;
+  badges: Badge[];
+  breakdown?: {
+    base: number;
+    social: number;
+  };
+  timestamp?: string;
+  demo?: boolean;
+};
 
 const TIER_STEPS = [
   { name: "Explorer", min: 0 },
@@ -36,13 +45,47 @@ const TIER_STEPS = [
   { name: "Core", min: 850 },
 ];
 
+/* ───────────────── Page ───────────────── */
 
 export default function DashboardPage() {
-  const [wallet] = useState(mockWallet);
-  const [score] = useState(mockScore);
-  const [status] = useState("connected");
+  const { publicKey, connected } = useWallet();
 
-  if (status !== "connected") {
+  const [data, setData] = useState<FairScaleResponse | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  /* ───────── Fetch FairScale ───────── */
+
+  useEffect(() => {
+    if (!connected || !publicKey) return;
+
+    const fetchScore = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        const res = await fetch(
+          `/api/fairscale?wallet=${publicKey.toBase58()}`
+        );
+
+        if (!res.ok) throw new Error("FairScale API failed");
+
+        const json = await res.json();
+        setData(json);
+      } catch (err) {
+        console.error(err);
+        setError("Could not load FairScale data");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchScore();
+  }, [connected, publicKey]);
+
+  /* ───────── Guards ───────── */
+
+  if (!connected) {
     return (
       <div className="flex min-h-screen items-center justify-center text-sm text-slate-500">
         Connect your wallet to view dashboard
@@ -50,16 +93,25 @@ export default function DashboardPage() {
     );
   }
 
-  if (!score) {
+  if (loading || !data) {
     return (
       <div className="flex min-h-screen items-center justify-center text-sm text-slate-500">
         Fetching reputation…
       </div>
     );
   }
-  
 
- 
+  if (error) {
+    return (
+      <div className="flex min-h-screen items-center justify-center text-sm text-red-400">
+        {error}
+      </div>
+    );
+  }
+
+  /* ───────── Derived values ───────── */
+
+  const score = data.fairscore;
   const tier = getTier(score);
 
   const currentIndex = TIER_STEPS.findIndex(
@@ -74,48 +126,38 @@ export default function DashboardPage() {
       100
     : 100;
 
-  /** ✅ LEVEL-BASED COLORS (bronze / silver / gold / diamond) */
   const COLOR_STYLES: Record<
     "bronze" | "silver" | "gold" | "diamond",
     { badge: string; bar: string }
   > = {
     bronze: {
-      badge:
-        "bg-amber-700/10 text-amber-500 border-amber-700/30",
+      badge: "bg-amber-700/10 text-amber-500 border-amber-700/30",
       bar: "bg-amber-500",
     },
     silver: {
-      badge:
-        "bg-slate-400/10 text-slate-300 border-slate-400/30",
+      badge: "bg-slate-400/10 text-slate-300 border-slate-400/30",
       bar: "bg-slate-300",
     },
     gold: {
-      badge:
-        "bg-yellow-400/10 text-yellow-300 border-yellow-400/30",
+      badge: "bg-yellow-400/10 text-yellow-300 border-yellow-400/30",
       bar: "bg-yellow-400",
     },
     diamond: {
-      badge:
-        "bg-cyan-400/10 text-cyan-300 border-cyan-400/30",
+      badge: "bg-cyan-400/10 text-cyan-300 border-cyan-400/30",
       bar: "bg-cyan-400",
     },
   };
 
-  const colors = COLOR_STYLES[tier.level]
-  
+  const colors = COLOR_STYLES[tier.level];
+
+  /* ───────────────── Render ───────────────── */
 
   return (
     <main className="relative min-h-screen px-4 py-8 sm:px-6 sm:py-16">
-      {/* Ambient background effects */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 -left-48 w-96 h-96 bg-emerald-500/5 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-1/4 -right-48 w-96 h-96 bg-amber-500/5 rounded-full blur-3xl"></div>
-      </div>
-
       <div className="relative z-10 mx-auto max-w-6xl space-y-8">
         {/* Header */}
         <section className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
-          <div className="space-y-2">
+          <div>
             <h1 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-white to-slate-300 bg-clip-text text-transparent">
               FairRewards Dashboard
             </h1>
@@ -124,63 +166,50 @@ export default function DashboardPage() {
             </p>
           </div>
 
-          {/* Tier Badge */}
-          <div className={`inline-flex items-center gap-2.5 rounded-2xl px-5 py-2.5 text-sm font-semibold border backdrop-blur-sm ${colors.badge}`}>
+          <div className={`inline-flex items-center gap-2.5 rounded-2xl px-5 py-2.5 text-sm font-semibold border ${colors.badge}`}>
             <ShieldCheck size={18} />
             {tier.level.toUpperCase()}
           </div>
         </section>
 
-        {/* Score Hero Card */}
-        <section className="relative overflow-hidden rounded-3xl border border-border-strong bg-card-background p-8 backdrop-blur-sm">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-bl from-emerald-500/10 to-transparent rounded-full blur-3xl"></div>
-          
-          <div className="relative grid gap-8 sm:grid-cols-3">
-            <div className="space-y-2">
-              <p className="text-xs font-medium text-gray-200 uppercase tracking-wider">Wallet Address</p>
-              <p className="font-mono text-sm text-white">
-                {wallet?.account?.address
-                  ? `${wallet.account.address.toString().slice(0, 8)}...${wallet.account.address.toString().slice(-6)}`
-                  : "—"}
+        {/* Score Card */}
+        <section className="rounded-3xl border border-border-strong bg-card-background p-8">
+          <div className="grid gap-8 sm:grid-cols-3">
+            <div>
+              <p className="text-xs uppercase text-gray-400">Wallet</p>
+              <p className="font-mono text-white">
+                {`${data.wallet.slice(0, 8)}...${data.wallet.slice(-6)}`}
               </p>
             </div>
 
-            <div className="space-y-2">
-              <p className="text-xs font-medium text-gray-200 uppercase tracking-wider">FairScore</p>
-              <div className="flex items-baseline gap-2">
-                <p className="text-4xl font-bold text-white">{score}</p>
-                <span className="text-sm text-slate-400">/ 1000</span>
-              </div>
+            <div>
+              <p className="text-xs uppercase text-gray-400">FairScore</p>
+              <p className="text-4xl font-bold text-white">{score}</p>
             </div>
 
-            <div className="space-y-2">
-              <p className="text-xs font-medium text-gray-200 uppercase tracking-wider">Reward Multiplier</p>
-              <p className="text-4xl font-bold bg-white bg-clip-text text-transparent">
+            <div>
+              <p className="text-xs uppercase text-gray-400">Multiplier</p>
+              <p className="text-4xl font-bold text-white">
                 {tier.multiplier}×
               </p>
             </div>
           </div>
 
-          {/* Progress Bar */}
           {nextStep && (
-            <div className="mt-6 space-y-2">
-              <div className="flex justify-between text-xs text-slate-400">
-              <span>
-                Progress to {nextStep?.name ?? "Max"} Tier
-              </span>
+            <div className="mt-6">
+              <div className="flex justify-between text-xs text-slate-400 mb-1">
+                <span>Progress to {nextStep.name}</span>
                 <span>{Math.round(progress)}%</span>
               </div>
-              <div className="h-2 rounded-full bg-slate-800 overflow-hidden">
+              <div className="h-2 rounded-full bg-slate-800">
                 <div
-                  className={`h-full ${colors.bar} transition-all duration-500 rounded-full`}
+                  className={`h-full rounded-full ${colors.bar}`}
                   style={{ width: `${progress}%` }}
                 />
               </div>
             </div>
           )}
         </section>
-
-        {/* Perks Grid */}
         <section>
           <h2 className="mb-6 text-xl font-semibold text-white flex items-center gap-2">
             Your Perks
@@ -224,21 +253,15 @@ export default function DashboardPage() {
         </section>
           
 
-          <section>
-            <h2 className="mb-6 text-xl font-semibold text-white">
-              Reputation-Based Actions
-            </h2>
 
-            <div className="grid gap-4 sm:grid-cols-2">
-              <BalanceCard />
-              <AirdropRewardCard multiplier={tier.multiplier} />
-              <SwapCard multiplier={tier.multiplier} />
-              <ChatRoomCard score={mockScore} />
-              
-            </div>
-          </section>
+        {/* Actions */}
+        <section className="grid gap-4 sm:grid-cols-2">
+          <BalanceCard />
+          <AirdropRewardCard multiplier={tier.multiplier} />
+          <SwapCard multiplier={tier.multiplier} />
+          <ChatRoomCard score={score} />
+        </section>
 
-        {/* Info Card */}
         <section className="group relative overflow-hidden rounded-3xlborder border border-strong bg-card-background p-6 hover:border-slate-700 transition-all backdrop-blur-sm rounded-xl">
           <div className="flex items-start justify-between gap-4">
             <div className="space-y-2">
@@ -256,6 +279,7 @@ export default function DashboardPage() {
     </main>
   );
 }
+
 
 function Perk({
   icon: Icon,

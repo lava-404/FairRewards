@@ -4,7 +4,7 @@ import { ShieldCheck, Lock, TrendingUp, Users } from "lucide-react";
 
 export default function AboutPage() {
   return (
-    <main className="relative min-h-screen overflow-hidden bg-black">
+    <main className="relative min-h-screen overflow-hidden">
       {/* Ambient background */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-48 left-1/2 -translate-x-1/2 w-[520px] h-[520px] bg-amber-500/7 rounded-full blur-3xl" />
