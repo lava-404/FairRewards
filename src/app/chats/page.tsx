@@ -4,6 +4,7 @@ import { ArrowLeft, ShieldCheck, Users, MessageCircle } from "lucide-react";
 import Link from "next/link";
 import { getTier } from "@/lib/fairscore";
 import { ROOM_CONFIG } from "@/lib/rooms";
+import { useRouter } from "next/navigation";
 
 // demo score (replace later with API)
 const mockScore = 750;
@@ -55,11 +56,27 @@ export default function RoomPage() {
 
   const colors = COLOR_STYLES[tier.color];
 
+  const TIER_IMAGE_MAP: Record<
+  "bronze" | "silver" | "gold" | "diamond",
+  string
+  > = {
+    bronze: "/explorer.png",
+    silver: "/builder.png",
+    gold: "/trusted.png",
+    diamond: "/core.png",
+  };
+
+
   return (
     <main className="relative min-h-screen bg-background px-4 py-8 sm:px-6 sm:py-16">
       
       <div className="relative z-10 mx-auto max-w-6xl space-y-8">
-      <img className="h-[50vh] w-full" src="/trusted.png"></img>
+      <img
+        src={TIER_IMAGE_MAP[tier.level]}
+        alt={`${tier.stage} room`}
+        className="h-[50vh] w-full object-cover rounded-2xl"
+      />
+
         {/* Header */}
         <section className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
           <div className="space-y-2">
@@ -165,15 +182,19 @@ function ActionCard({
   description,
   highlight,
   colors,
+  href
 }: {
   icon: any;
   title: string;
   description: string;
   highlight?: boolean;
   colors: { glow: string; soft: string };
+  href?: string
 }) {
+
+  const router = useRouter();
   return (
-    <div className="group relative overflow-hidden rounded-2xl border border-border-strong p-6 bg-card-background backdrop-blur-sm transition-all hover:scale-[1.02]">
+    <div  onClick={() => href && router.push(href)} className="group relative overflow-hidden rounded-2xl border border-border-strong p-6 bg-card-background backdrop-blur-sm transition-all hover:scale-[1.02] cursor-pointer">
       <div
         className={`absolute -top-12 -right-12 h-40 w-40 blur-3xl opacity-0 group-hover:opacity-20 transition ${colors.glow}`}
       />

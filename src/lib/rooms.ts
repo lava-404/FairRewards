@@ -12,6 +12,7 @@ export type RoomAction = {
   title: string;
   description: string;
   highlight?: boolean;
+  href?: string
 };
 
 export type RoomConfig = {
@@ -84,6 +85,7 @@ export const ROOM_CONFIG: Record<RoomStage, RoomConfig> = {
         title: "Join Live Council",
         description: "High-signal discussions",
         highlight: true,
+        href: "/chats/rooms"
       },
       {
         icon: Sparkles,

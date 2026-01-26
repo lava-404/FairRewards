@@ -101,7 +101,7 @@ export default function DashboardPage() {
   
 
   return (
-    <main className="relative min-h-screen bg-background px-4 py-8 sm:px-6 sm:py-16">
+    <main className="relative min-h-screen px-4 py-8 sm:px-6 sm:py-16">
       {/* Ambient background effects */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-1/4 -left-48 w-96 h-96 bg-emerald-500/5 rounded-full blur-3xl"></div>

@@ -1,12 +1,39 @@
 "use client";
 
 import { ArrowRight } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useWallet } from "@solana/wallet-adapter-react";
 import WalletConnectModal from "./wallet/WalletConnectModal";
 
-
 export default function HeroSection() {
+  const router = useRouter();
+  const { connected } = useWallet();
+
   const [open, setOpen] = useState(false);
+  const [pendingRedirect, setPendingRedirect] = useState(false);
+
+  /**
+   * If user connects wallet AFTER clicking "Enter FairRoom",
+   * redirect them automatically
+   */
+  useEffect(() => {
+    if (connected && pendingRedirect) {
+      setOpen(false);
+      setPendingRedirect(false);
+      router.push("/dashboard");
+    }
+  }, [connected, pendingRedirect, router]);
+
+  const handleEnter = () => {
+    if (connected) {
+      router.push("/dashboard");
+    } else {
+      setPendingRedirect(true);
+      setOpen(true);
+    }
+  };
+
   return (
     <section className="relative w-full overflow-hidden bg-background">
       {/* Content */}
@@ -22,9 +49,8 @@ export default function HeroSection() {
           </span>
         </h1>
 
-
         {/* Subheadline */}
-        <p className="mt-5 max-w-xl text-pretty text-base leading-relaxed text-gray-00 sm:text-lg">
+        <p className="mt-5 max-w-xl text-pretty text-base leading-relaxed text-gray-300 sm:text-lg">
           FairRoom helps you connect with like-minded builders, learners, and
           creatives, using on-chain reputation to create safer, higher-quality
           communities.
@@ -32,30 +58,35 @@ export default function HeroSection() {
 
         {/* CTAs */}
         <div className="mt-8 flex w-full flex-col items-center gap-3 sm:flex-row sm:justify-center">
-          {/* Primary CTA */}
-          <button className="group inline-flex items-center justify-center gap-2 rounded-lg bg-white px-6 py-2.5 text-sm font-medium text-black transition hover:bg-gray-100 cursor-pointer" onClick={() => setOpen(true)}>
+          {/* Connect Wallet */}
+          <button
+            onClick={() => setOpen(true)}
+            className="group inline-flex items-center justify-center gap-2 rounded-lg bg-white px-6 py-2.5 text-sm font-medium text-black transition hover:bg-gray-100"
+          >
             Connect Wallet
             <ArrowRight
               size={16}
               className="transition-transform group-hover:translate-x-0.5"
             />
           </button>
-          {open && <WalletConnectModal onClose={() => setOpen(false)} />}
 
-          {/* Secondary CTA */}
-          <button className="inline-flex items-center justify-center rounded-lg border border-gray-800 bg-black px-6 py-2.5 text-sm font-medium text-gray-300 transition hover:border-gray-700 hover:bg-gray-900 cursor-pointer">
+          {/* Enter FairRoom */}
+          <button
+            onClick={handleEnter}
+            className="inline-flex items-center justify-center rounded-lg border border-gray-800 bg-black px-6 py-2.5 text-sm font-medium text-gray-300 transition hover:border-gray-700 hover:bg-gray-900"
+          >
             Enter FairRoom
           </button>
         </div>
 
-        {/* CTA Helper Text */}
+        {/* Helper Text */}
         <div className="mt-4 flex flex-col gap-1 text-xs text-gray-500 sm:flex-row sm:gap-3">
           <span>Connect wallet, find your people</span>
           <span className="hidden sm:inline">·</span>
           <span>See how rooms are matched by vibe & trust</span>
         </div>
 
-        {/* Trust Microcopy */}
+        {/* Trust Copy */}
         <p className="mt-10 max-w-md text-center text-xs leading-relaxed text-gray-500">
           Powered by reputation, not followers.
           <br />
@@ -63,15 +94,17 @@ export default function HeroSection() {
         </p>
       </div>
 
-      {/* Bottom Fade Grid Background */}
-      {/* Bottom Fade Grid Background */}
-      <div className="pointer-events-none absolute inset-x-100 bottom-0 z-0 h-[100vh]">
+      {/* Wallet Modal */}
+      {open && <WalletConnectModal onClose={() => setOpen(false)} />}
+
+      {/* Bottom Grid Fade */}
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 z-0 h-[100vh]">
         <div
           className="absolute inset-0"
           style={{
             backgroundImage: `
-              linear-gradient(to right,rgb(21, 20, 20)1px, transparent 1px),
-              linear-gradient(to bottom, rgb(21, 20, 20) 1px, transparent 1px)
+              linear-gradient(to right, rgb(21,20,20) 1px, transparent 1px),
+              linear-gradient(to bottom, rgb(21,20,20) 1px, transparent 1px)
             `,
             backgroundSize: "88px 88px",
             WebkitMaskImage:
