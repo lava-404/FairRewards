@@ -12,7 +12,7 @@ import {
   Transaction,
 } from "@solana/web3.js";
 import { useWallet, useConnection } from "@solana/wallet-adapter-react";
-import { CURRENT_NETWORK, getNetworkTokens } from "@/config/fairroom";
+import { CURRENT_NETWORK, getNetworkTokens } from "@/config/FairRewards";
 import { useTransactionToast } from "../use-transaction-toast";
 import {createTransaction} from "@/hooks/useRequestAirdrop"
 

@@ -10,7 +10,7 @@
 
 import { NextResponse } from 'next/server'
 import { LAMPORTS_PER_SOL } from '@solana/web3.js'
-import { getNetworkTokens } from '@/config/fairroom'
+import { getNetworkTokens } from '@/config/FairRewards'
 
 
 /**

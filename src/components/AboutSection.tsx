@@ -14,7 +14,7 @@ export default function AboutSection() {
           {/* Eyebrow with animated underline */}
           <div className="inline-flex flex-col items-center gap-2">
             <p className="text-xs font-medium uppercase tracking-wide text-gray-500">
-              About FairRoom
+              About FairRewards
             </p>
             <div className="h-px w-12 bg-gradient-to-r from-transparent via-gray-500 to-transparent"></div>
           </div>
@@ -47,14 +47,14 @@ export default function AboutSection() {
           {/* Body with enhanced spacing and subtle card effect */}
           <div className="mt-8 space-y-5">
             <p className="text-pretty text-sm leading-relaxed text-gray-400 sm:text-base transition-opacity hover:text-gray-300">
-              FairRoom is built for people who want meaningful conversations, not
+              FairRewards is built for people who want meaningful conversations, not
               noise. Instead of open invites and follower counts, access is shaped
               by reputation — helping communities stay respectful, relevant, and
               genuinely social.
             </p>
 
             <p className="text-pretty text-sm leading-relaxed text-gray-400 sm:text-base transition-opacity hover:text-gray-300">
-              Whether you're learning, building, or just exploring, FairRoom helps
+              Whether you're learning, building, or just exploring, FairRewards helps
               you meet people who are at a similar stage — so interactions feel
               natural, not forced.
             </p>

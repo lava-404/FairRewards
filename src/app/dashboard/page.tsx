@@ -12,6 +12,10 @@ import { AirdropRewardCard } from "@/components/features/AirdropRewarCard";
 import { BalanceCard } from "@/components/features/BalanceCard";
 import { SwapCard } from "@/components/features/SwapCard";
 import { getTier } from "@/lib/fairscore";
+import { ChatRoomCard } from "@/components/features/ChatRoomCard";
+
+
+
 
 
 // Mock data for demo
@@ -113,7 +117,7 @@ export default function DashboardPage() {
         <section className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
           <div className="space-y-2">
             <h1 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-white to-slate-300 bg-clip-text text-transparent">
-              FairRoom Dashboard
+              FairRewards Dashboard
             </h1>
             <p className="text-sm text-gray-100">
               Your reputation shapes your access & rewards
@@ -227,8 +231,10 @@ export default function DashboardPage() {
 
             <div className="grid gap-4 sm:grid-cols-2">
               <BalanceCard />
-              <SwapCard multiplier={tier.multiplier} />
               <AirdropRewardCard multiplier={tier.multiplier} />
+              <SwapCard multiplier={tier.multiplier} />
+              <ChatRoomCard score={mockScore} />
+              
             </div>
           </section>
 

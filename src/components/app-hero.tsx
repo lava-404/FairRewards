@@ -14,7 +14,7 @@ export default function HeroSection() {
   const [pendingRedirect, setPendingRedirect] = useState(false);
 
   /**
-   * If user connects wallet AFTER clicking "Enter FairRoom",
+   * If user connects wallet AFTER clicking "Enter FairRewards",
    * redirect them automatically
    */
   useEffect(() => {
@@ -35,23 +35,29 @@ export default function HeroSection() {
   };
 
   return (
-    <section className="relative w-full overflow-hidden bg-background">
+    <>
+    <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-1/4 -left-48 w-96 h-96 bg-emerald-500/7 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-1/4 -right-48 w-96 h-96 bg-amber-500/7 rounded-full blur-3xl"></div>
+      </div>
+    <section className="relative w-full overflow-hidden">
+      
       {/* Content */}
       <div className="relative z-10 mx-auto flex min-h-[70vh] max-w-4xl flex-col items-center justify-center px-6 py-20 text-center sm:py-24">
         {/* Headline */}
         <h1 className="text-balance text-4xl font-medium leading-snug tracking-tight sm:text-5xl md:text-6xl">
-          <span className="bg-gradient-to-r from-gray-300 via-white to-gray-300 bg-clip-text text-transparent">
+          <span className="bg-gradient-to-r from-gray-500 via-white to-gray-500 bg-clip-text text-transparent">
             Find Your Vibe.
           </span>
           <br />
-          <span className="bg-gradient-to-r from-gray-300 via-white to-gray-300 bg-clip-text text-transparent">
+          <span className="bg-gradient-to-r from-gray-500 via-white to-gray-500 bg-clip-text text-transparent">
             Meet People on Your Level.
           </span>
         </h1>
 
         {/* Subheadline */}
         <p className="mt-5 max-w-xl text-pretty text-base leading-relaxed text-gray-300 sm:text-lg">
-          FairRoom helps you connect with like-minded builders, learners, and
+          FairRewards helps you connect with like-minded builders, learners, and
           creatives, using on-chain reputation to create safer, higher-quality
           communities.
         </p>
@@ -70,12 +76,12 @@ export default function HeroSection() {
             />
           </button>
 
-          {/* Enter FairRoom */}
+          {/* Enter FairRewards */}
           <button
             onClick={handleEnter}
             className="inline-flex items-center justify-center rounded-lg border border-gray-800 bg-black px-6 py-2.5 text-sm font-medium text-gray-300 transition hover:border-gray-700 hover:bg-gray-900"
           >
-            Enter FairRoom
+            Enter FairRewards
           </button>
         </div>
 
@@ -115,5 +121,6 @@ export default function HeroSection() {
         />
       </div>
     </section>
+  </>
   );
 }

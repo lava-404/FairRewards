@@ -19,7 +19,7 @@ const features = [
     icon: Sparkles,
     title: "Designed for real interaction",
     description:
-      "No DMs, no follower chasing. FairRoom focuses on shared spaces where conversations happen naturally.",
+      "No DMs, no follower chasing. FairRewards focuses on shared spaces where conversations happen naturally.",
   },
 ];
 

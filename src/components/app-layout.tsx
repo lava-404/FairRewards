@@ -3,8 +3,8 @@
 import { ThemeProvider } from './theme-provider'
 import { Toaster } from './ui/sonner'
 import React from 'react'
-import { AppFooter } from '@/components/app-footer'
 import AppHeader from './app-header'
+import Footer from './app-footer'
 
 export function AppLayout({
   children,
@@ -23,7 +23,7 @@ export function AppLayout({
          
           {children}
         </main>
-        <AppFooter />
+        <Footer />
       </div>
       <Toaster />
     </ThemeProvider>

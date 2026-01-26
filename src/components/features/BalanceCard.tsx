@@ -5,7 +5,7 @@ import { Wallet, Coins } from "lucide-react";
 import { Connection, PublicKey, LAMPORTS_PER_SOL } from "@solana/web3.js";
 import { getAssociatedTokenAddress } from "@solana/spl-token";
 import { useWallet } from "@solana/wallet-adapter-react";
-import { getNetworkTokens, CURRENT_NETWORK } from "@/config/fairroom";
+import { getNetworkTokens, CURRENT_NETWORK } from "@/config/FairRewards";
 
 const { USDC } = getNetworkTokens();
 

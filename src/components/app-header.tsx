@@ -2,10 +2,28 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter, usePathname } from "next/navigation";
 import { Menu, X, ArrowRight } from "lucide-react";
 
 export default function AppHeader() {
   const [open, setOpen] = useState(false);
+  const router = useRouter();
+  const pathname = usePathname();
+
+  const handleHowItWorksClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    
+    // If we're already on the home page, just scroll
+    if (pathname === "/") {
+      const element = document.getElementById("how-it-works");
+      element?.scrollIntoView({ behavior: "smooth", block: "start" });
+    } else {
+      // Navigate to home page with hash
+      router.push("/#how-it-works");
+    }
+    
+    setOpen(false);
+  };
 
   return (
     <header
@@ -23,24 +41,31 @@ export default function AppHeader() {
           className="flex items-center gap-2 text-lg font-semibold"
           style={{ color: "#312f2c" }}
         >
-          FairRoom
+          FairRewards
         </Link>
 
         {/* Desktop Nav */}
         <nav className="hidden items-center gap-8 md:flex">
           <NavLink href="/communities" label="Communities" />
-          <NavLink href="/how-it-works" label="How it works" />
+          <a
+            href="#how-it-works"
+            onClick={handleHowItWorksClick}
+            className="text-sm font-medium transition hover:opacity-70 cursor-pointer"
+            style={{ color: "#312f2c" }}
+          >
+            How it works
+          </a>
           <NavLink href="/about" label="About" />
 
           <Link
-            href="/app"
+            href="/dashboard"
             className="flex items-center gap-1 rounded-full px-4 py-2 text-sm font-semibold transition hover:opacity-80"
             style={{
               backgroundColor: "#312f2c",
               color: "#fafafa",
             }}
           >
-            Join for free
+            Dashboard
             <ArrowRight size={16} />
           </Link>
         </nav>
@@ -66,22 +91,16 @@ export default function AppHeader() {
           }}
         >
           <div className="flex flex-col gap-4 px-5 py-6">
-            <MobileLink href="/communities" label="Communities" />
-            <MobileLink href="/how-it-works" label="How it works" />
-            <MobileLink href="/about" label="About" />
-
-            <Link
-              href="/app"
-              onClick={() => setOpen(false)}
-              className="mt-2 flex items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold"
-              style={{
-                backgroundColor: "#312f2c",
-                color: "#fafafa",
-              }}
+            <MobileLink href="/communities" label="Communities" onClick={() => setOpen(false)} />
+            <a
+              href="#how-it-works"
+              onClick={handleHowItWorksClick}
+              className="text-base font-medium cursor-pointer"
+              style={{ color: "#312f2c" }}
             >
-              Join for free
-              <ArrowRight size={16} />
-            </Link>
+              How it works
+            </a>
+            <MobileLink href="/about" label="About" onClick={() => setOpen(false)} />
           </div>
         </div>
       )}
@@ -101,10 +120,19 @@ function NavLink({ href, label }: { href: string; label: string }) {
   );
 }
 
-function MobileLink({ href, label }: { href: string; label: string }) {
+function MobileLink({ 
+  href, 
+  label, 
+  onClick 
+}: { 
+  href: string; 
+  label: string;
+  onClick?: () => void;
+}) {
   return (
     <Link
       href={href}
+      onClick={onClick}
       className="text-base font-medium"
       style={{ color: "#312f2c" }}
     >
