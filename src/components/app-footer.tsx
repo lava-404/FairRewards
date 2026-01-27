@@ -44,7 +44,7 @@ function Footer() {
               </li>
               <li>
                 <Link
-                  href="/docs"
+                  href="/"
                   className="text-gray-700 hover:text-black transition"
                 >
                   Docs
@@ -106,10 +106,10 @@ function Footer() {
           <p>© {new Date().getFullYear()} FairRewards</p>
 
           <div className="flex gap-4">
-            <Link href="/privacy" className="hover:text-black transition">
+            <Link href="/" className="hover:text-black transition">
               Privacy
             </Link>
-            <Link href="/terms" className="hover:text-black transition">
+            <Link href="/" className="hover:text-black transition">
               Terms
             </Link>
           </div>

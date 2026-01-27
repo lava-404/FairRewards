@@ -1,9 +1,16 @@
 "use client";
 
 import { ArrowRight, ShieldCheck, Users, Crown, Sparkles, LucideIcon } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 export default function CommunitiesPage() {
+  const router = useRouter();
+  const handleEnter = () => {
+    router.push("/dashboard");
+  }
+
+  
   const [hoveredRoom, setHoveredRoom] = useState<number | null>(null);
 
   return (
@@ -191,7 +198,7 @@ export default function CommunitiesPage() {
               access you've already earned.
             </p>
 
-            <button className="group/btn relative inline-flex items-center gap-2 rounded-xl bg-white text-black px-6 sm:px-8 py-3 text-sm font-medium hover:shadow-[0_0_30px_rgba(255,255,255,0.3)] transition-all hover:scale-105 active:scale-95">
+            <button onClick={handleEnter} className="group/btn relative inline-flex items-center gap-2 rounded-xl bg-white text-black px-6 sm:px-8 py-3 text-sm font-medium hover:shadow-[0_0_30px_rgba(255,255,255,0.3)] transition-all hover:scale-105 active:scale-95">
               <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-white to-gray-100 opacity-0 group-hover/btn:opacity-100 transition-opacity" />
               <span className="relative">Enter FairScale</span>
               <ArrowRight

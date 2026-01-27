@@ -1,9 +1,11 @@
+// app/api/fairscale/route.ts
 import { NextRequest, NextResponse } from "next/server";
 
 /**
- * Simple in-memory cache
- * key   -> wallet address
- * value -> cached response + expiry
+ * ─────────────────────────────────────────────
+ * In-memory cache (per wallet)
+ * NOTE: resets on server restart (OK for now)
+ * ─────────────────────────────────────────────
  */
 const cache = new Map<
   string,
@@ -15,28 +17,37 @@ const cache = new Map<
 
 const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
 
+/**
+ * Shape returned to frontend
+ * (mirrors FairScale, no guessing)
+ */
 type FairscaleResponse = {
   wallet: string;
   fairscore: number;
+  fairscore_base: number;
+  social_score: number;
   tier: string;
   badges: any[];
-  breakdown?: {
-    base: number;
-    social: number;
-  };
+  actions?: any[];
+  features?: Record<string, number>;
   timestamp?: string;
+
+  /** meta */
+  source: "fairscale" | "cache" | "fallback";
   cached?: boolean;
   demo?: boolean;
-  source: "fairscale" | "cache" | "fallback";
+  error?: string;
 };
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
+
   const wallet = searchParams.get("wallet");
+  const twitter = searchParams.get("twitter"); // optional
 
   if (!wallet) {
     return NextResponse.json(
-      { error: "Missing wallet" },
+      { error: "Missing wallet parameter" },
       { status: 400 }
     );
   }
@@ -51,55 +62,69 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({
       ...cached.data,
       cached: true,
+      source: "cache",
     });
   }
 
   /**
    * ─────────────────────────────────────────────
-   * 2️⃣ Fetch from FairScale API
+   * 2️⃣ Build FairScale request URL
    * ─────────────────────────────────────────────
    */
-  console.log("API KEY PRESENT:", !!process.env.FAIRSCALE_API_KEY);
-  try {
-    const res = await fetch(
-      `https://api.fairscale.xyz/score?wallet=${wallet}`,
-      {
-        headers: {
-          Authorization: `Bearer ${process.env.FAIRSCALE_API_KEY}`,
-        },
-      }
-    );
+  const params = new URLSearchParams({ wallet });
+  if (twitter) params.set("twitter", twitter);
 
+  const url = `https://api.fairscale.xyz/score?${params.toString()}`;
+
+  /**
+   * ─────────────────────────────────────────────
+   * 3️⃣ Fetch from FairScale
+   * ─────────────────────────────────────────────
+   */
+  try {
+    if (!process.env.FAIRSCALE_API_KEY) {
+      throw new Error("FAIRSCALE_API_KEY is missing");
+    }
+
+    const res = await fetch(url, {
+      headers: {
+        Authorization: `Bearer ${process.env.FAIRSCALE_API_KEY}`,
+        Accept: "application/json",
+      },
+      // IMPORTANT: disable Next fetch cache
+      cache: "no-store",
+    });
 
     if (!res.ok) {
       const text = await res.text();
-      console.error("FairScale ERROR:", res.status, text);
-      throw new Error(`FairScale API error ${res.status}`);
+      throw new Error(
+        `FairScale failed (${res.status}): ${text}`
+      );
     }
-    
 
     const raw = await res.json();
 
     /**
-     * ✅ Normalize response for frontend
-     * (NO hardcoding here)
+     * ─────────────────────────────────────────────
+     * 4️⃣ Normalize (NO hardcoding)
+     * ─────────────────────────────────────────────
      */
     const data: FairscaleResponse = {
       wallet: raw.wallet,
       fairscore: raw.fairscore,
-      tier: raw.tier, // ← comes directly from FairScale
+      fairscore_base: raw.fairscore_base,
+      social_score: raw.social_score,
+      tier: raw.tier,
       badges: raw.badges ?? [],
-      breakdown: {
-        base: raw.fairscore_base,
-        social: raw.social_score,
-      },
+      actions: raw.actions ?? [],
+      features: raw.features ?? {},
       timestamp: raw.timestamp,
-      source: "fairscale"
+      source: "fairscale",
     };
 
     /**
      * ─────────────────────────────────────────────
-     * 3️⃣ Cache result
+     * 5️⃣ Cache it
      * ─────────────────────────────────────────────
      */
     cache.set(wallet, {
@@ -108,22 +133,25 @@ export async function GET(req: NextRequest) {
     });
 
     return NextResponse.json(data);
-  } catch (err) {
-    console.error("FairScale fetch failed:", err);
+  } catch (err: any) {
+    console.error("❌ FairScale error:", err.message);
 
     /**
      * ─────────────────────────────────────────────
-     * 4️⃣ Fallback (ONLY when API fails)
+     * 6️⃣ Fallback (clearly marked)
      * ─────────────────────────────────────────────
-     * This is intentionally marked as demo
      */
     const fallback: FairscaleResponse = {
       wallet,
-      fairscore: 78.4,
+      fairscore: 72.4,
+      fairscore_base: 58,
+      social_score: 14.4,
       tier: "gold",
       badges: [],
+      features: {},
       demo: true,
-      source: "fallback"
+      source: "fallback",
+      error: err.message,
     };
 
     return NextResponse.json(fallback, { status: 200 });

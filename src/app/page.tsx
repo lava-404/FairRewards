@@ -459,6 +459,20 @@ function Features() {
 /* ─────────────────────── CTA ─────────────────────── */
 
 function CTA() {
+  const router = useRouter();
+  const { connected } = useWallet();
+
+  const [open, setOpen] = useState(false);
+  const [pendingRedirect, setPendingRedirect] = useState(false);
+
+  const handleEnter = () => {
+    if (connected) {
+      router.push("/dashboard");
+    } else {
+      setPendingRedirect(true);
+      setOpen(true);
+    }
+  };
   return (
     <section className="py-16 sm:py-24 relative overflow-hidden">
       {/* Background glow */}
@@ -474,7 +488,7 @@ function CTA() {
           Join FairRewards today and connect with people who share your values and
           vision.
         </p>
-        <button className="w-full sm:w-auto group relative inline-flex items-center justify-center gap-2 rounded-xl bg-white px-8 sm:px-10 py-3 sm:py-4 text-sm font-medium text-black transition-all hover:shadow-[0_0_40px_rgba(255,255,255,0.4)] hover:scale-105 active:scale-95">
+        <button onClick={handleEnter} className="w-full sm:w-auto group relative inline-flex items-center justify-center gap-2 rounded-xl bg-white px-8 sm:px-10 py-3 sm:py-4 text-sm font-medium text-black transition-all hover:shadow-[0_0_40px_rgba(255,255,255,0.4)] hover:scale-105 active:scale-95">
           <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-white to-gray-100 opacity-0 group-hover:opacity-100 transition-opacity" />
           <span className="relative">Get Started</span>
           <ArrowRight

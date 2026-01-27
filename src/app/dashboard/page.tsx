@@ -58,30 +58,53 @@ export default function DashboardPage() {
 
   useEffect(() => {
     if (!connected || !publicKey) return;
-
+  
+    let cancelled = false;
+  
     const fetchScore = async () => {
       try {
         setLoading(true);
         setError(null);
-
+  
         const res = await fetch(
           `/api/fairscale?wallet=${publicKey.toBase58()}`
         );
-
-        if (!res.ok) throw new Error("FairScale API failed");
-
+  
+        if (!res.ok) {
+          throw new Error(`API failed: ${res.status}`);
+        }
+  
         const json = await res.json();
+  
+        if (cancelled) return;
+  
         setData(json);
+  
+        // Optional but VERY useful
+        if (json.source === "fallback") {
+          console.warn("⚠️ Using fallback FairScale data:", json.error);
+        }
+  
+        if (json.cached) {
+          console.info("🧠 FairScale served from cache");
+        }
       } catch (err) {
-        console.error(err);
+        if (cancelled) return;
+  
+        console.error("FairScale fetch failed:", err);
         setError("Could not load FairScale data");
       } finally {
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       }
     };
-
+  
     fetchScore();
+  
+    return () => {
+      cancelled = true;
+    };
   }, [connected, publicKey]);
+  
 
   /* ───────── Guards ───────── */
 
