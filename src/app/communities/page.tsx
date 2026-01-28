@@ -9,6 +9,10 @@ export default function CommunitiesPage() {
   const handleEnter = () => {
     router.push("/dashboard");
   }
+  const handleWorks = () => {
+    router.push("/#how-it-works");
+  }
+
 
   
   const [hoveredRoom, setHoveredRoom] = useState<number | null>(null);
@@ -56,7 +60,7 @@ export default function CommunitiesPage() {
               Reputation-powered
             </span>
             <br />
-            <span className="bg-gradient-to-b from-white via-white to-gray-500 bg-clip-text text-transparent">
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-amber-400 font-extralight">
               communities
             </span>
           </h1>
@@ -67,7 +71,7 @@ export default function CommunitiesPage() {
           </p>
 
           <div className="mt-8 sm:mt-10 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 px-4 animate-fade-in-up" style={{animationDelay: "0.2s"}}>
-            <button className="w-full sm:w-auto group relative inline-flex items-center justify-center gap-2 rounded-xl bg-white px-6 sm:px-8 py-3 text-sm font-medium text-black transition-all hover:shadow-[0_0_30px_rgba(255,255,255,0.3)] hover:scale-[1.02] active:scale-[0.98]">
+            <button onClick={handleEnter} className="w-full sm:w-auto group relative inline-flex items-center justify-center gap-2 rounded-xl bg-white px-6 sm:px-8 py-3 text-sm font-medium text-black transition-all hover:shadow-[0_0_30px_rgba(255,255,255,0.3)] hover:scale-[1.02] active:scale-[0.98]">
               <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-white to-gray-100 opacity-0 group-hover:opacity-100 transition-opacity" />
               <span className="relative">View your access</span>
               <ArrowRight
@@ -76,7 +80,7 @@ export default function CommunitiesPage() {
               />
             </button>
 
-            <button className="w-full sm:w-auto group relative inline-flex items-center justify-center overflow-hidden rounded-xl border border-white/10 bg-white/[0.02] px-6 sm:px-8 py-3 text-sm font-medium text-gray-300 backdrop-blur-xl transition-all hover:border-white/20 hover:bg-white/[0.05] hover:scale-[1.02] active:scale-[0.98]">
+            <button onClick={handleWorks} className="w-full sm:w-auto group relative inline-flex items-center justify-center overflow-hidden rounded-xl border border-white/10 bg-white/[0.02] px-6 sm:px-8 py-3 text-sm font-medium text-gray-300 backdrop-blur-xl transition-all hover:border-white/20 hover:bg-white/[0.05] hover:scale-[1.02] active:scale-[0.98]">
               <span className="relative">Learn how FairScore works</span>
             </button>
           </div>
