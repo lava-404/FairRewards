@@ -194,7 +194,10 @@ function ActionCard({
 
   const router = useRouter();
   return (
-    <div  onClick={() => href && router.push(href)} className="group relative overflow-hidden rounded-2xl border border-border-strong p-6 bg-card-background backdrop-blur-sm transition-all hover:scale-[1.02] cursor-pointer">
+    <div  onClick={() => href && router.push(href)} className={`group relative overflow-hidden rounded-2xl border border-border-strong p-6 bg-card-background backdrop-blur-sm transition-all hover:scale-[1.02] ${highlight
+      ? "cursor-pointer ring-1 ring-amber-500/50 hover:scale-[1.02] hover:ring-amber-500"
+      : "opacity-80"
+    }`}>
       <div
         className={`absolute -top-12 -right-12 h-40 w-40 blur-3xl opacity-0 group-hover:opacity-20 transition ${colors.glow}`}
       />

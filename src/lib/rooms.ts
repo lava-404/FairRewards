@@ -82,7 +82,7 @@ export const ROOM_CONFIG: Record<RoomStage, RoomConfig> = {
     actions: [
       {
         icon: MessageCircle,
-        title: "Join Live Council",
+        title: "Join Live Council. Click here to join the chats.",
         description: "High-signal discussions",
         highlight: true,
         href: "/chats/rooms"

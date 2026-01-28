@@ -39,7 +39,7 @@ export default function Home() {
       <Divider />
 
       <About />
-      <Philosophy />
+      <Card />
 
       <Features />
       <CTA />
@@ -103,7 +103,7 @@ function Hero() {
         </div>
 
         <h1 className="text-balance text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-light leading-[1.15] tracking-tight animate-fade-in-up">
-          <span className="bg-gradient-to-b from-white via-white to-gray-500 bg-clip-text text-transparent font-extralight">
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-amber-400 font-extralight">
             Find Your Vibe.
           </span>
           <br />
@@ -221,7 +221,7 @@ function HowItWorks() {
     {
       step: "01",
       title: "Connect your wallet",
-      desc: "FairRewards reads on-chain activity to understand how you behave — not who you know.",
+      desc: "FairRewards reads on-chain activity to understand how you behave.",
       icon: Lock,
       color: "emerald",
     },
@@ -333,7 +333,7 @@ function About() {
           About FairRewards
         </p>
         <h2 className="mt-6 sm:mt-8 text-3xl sm:text-4xl md:text-5xl font-extralight text-white leading-tight px-4">
-          Communities feel better
+          Communities feel <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-amber-400">better</span>
           <br />
           when everyone belongs.
         </h2>
@@ -369,7 +369,7 @@ function About() {
 
 /* ─────────────────────── PHILOSOPHY ─────────────────────── */
 
-function Philosophy() {
+function Card() {
   return (
     <section className="mx-auto max-w-4xl px-4 sm:px-6 py-16 sm:py-20">
       <div className="group relative rounded-2xl sm:rounded-3xl border border-white/10 bg-gradient-to-b from-white/[0.05] to-transparent p-6 sm:p-10 md:p-14 text-center backdrop-blur-xl transition-all hover:border-white/20 hover:shadow-[0_0_80px_rgba(255,255,255,0.05)]">
@@ -481,7 +481,7 @@ function CTA() {
       </div>
 
       <div className="relative mx-auto max-w-3xl px-4 sm:px-6 text-center">
-        <h2 className="text-3xl sm:text-4xl md:text-5xl font-extralight text-white mb-4 sm:mb-6 leading-tight">
+        <h2 className="text-3xl sm:text-4xl md:text-5xl font-extralight text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-amber-400 mb-4 sm:mb-6 leading-tight">
           Ready to find your community?
         </h2>
         <p className="text-sm sm:text-base text-gray-400 mb-7 sm:mb-10 max-w-xl mx-auto font-light leading-relaxed px-4">

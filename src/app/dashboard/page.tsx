@@ -184,7 +184,7 @@ export default function DashboardPage() {
             <h1 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-white to-slate-300 bg-clip-text text-transparent">
               FairRewards Dashboard
             </h1>
-            <p className="text-sm text-gray-100">
+            <p className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-amber-400 font-extralight">
               Your reputation shapes your access & rewards
             </p>
           </div>
